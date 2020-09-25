@@ -3,6 +3,7 @@ package facades;
 import dto.ExceptionDTO;
 import dto.PersonDTO;
 import dto.PersonsDTO;
+import entities.Address;
 import entities.Person;
 import exceptions.MissingInputException;
 import exceptions.PersonNotFoundException;
@@ -21,10 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 //Uncomment the line below, to temporarily disable this test
-//@Disabled
+@Disabled
 public class PersonFacadeTest {
 
     private static EntityManagerFactory emf;
@@ -34,11 +36,15 @@ public class PersonFacadeTest {
     private Person p2 = new Person("Hansi", "Nantitis", "84756373");
     private Person p3 = new Person("Uffe", "Ufimaven", "24354635");
     
+    private Address a1 = new Address("Kurtsvej 37", "0000", "Kurtsby");
+    private Address a2 = new Address("Larsvej 87", "1111", "Larsby");
+    private Address a3 = new Address("Hovsvej 13", "2222", "Hovsby");
+    
     private String pNotFoundMsg = "No person with provided id found";
     private String pMisInpMsg = "First name and/or last name is missing";
     private String pNotFoundDeleteMsg = "Could not delete, provided id does not exist";
     
-
+    
     public PersonFacadeTest() {
     }
 
@@ -58,10 +64,19 @@ public class PersonFacadeTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
+        
+        p1.setAddress(a1);
+        p2.setAddress(a2);
+        p3.setAddress(a3);
+        
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
             em.createNativeQuery("ALTER TABLE PERSON AUTO_INCREMENT = 1").executeUpdate();
+            em.createNativeQuery("ALTER TABLE ADDRESS AUTO_INCREMENT = 1").executeUpdate();
+            
+            
             em.persist(p1);
             em.persist(p2);
             em.persist(p3);
@@ -123,7 +138,9 @@ public class PersonFacadeTest {
     public void addPersonTest() throws MissingInputException {
         Person newP = new Person("Niels", "Johansen", "13243546");
         PersonDTO expected = new PersonDTO(newP);
-        PersonDTO result = facade.addPerson(newP.getFirstName(), newP.getLastName(), newP.getPhone());
+        PersonDTO result = facade.addPerson(newP.getFirstName(), 
+                newP.getLastName(), newP.getPhone(), newP.getAddress().getStreet(),
+                newP.getAddress().getZip(), newP.getAddress().getCity());
         
         assertEquals(expected.getPhone(), result.getPhone());
     }
@@ -131,7 +148,7 @@ public class PersonFacadeTest {
     @Test
     public void addPersonNegativeTest() {
         Exception exception = assertThrows(MissingInputException.class, () -> {
-            facade.addPerson("", "Hansen", "99999999");
+            facade.addPerson("", "Hansen", "99999999", "Bentsvej 54", "9999", "Bentsby");
         });
         
         String expectedMessage = pMisInpMsg;
@@ -157,7 +174,7 @@ public class PersonFacadeTest {
     
     @Test
     public void editPersonNegativeTest() {
-        PersonDTO pNotFound = new PersonDTO("Person", "Notfound", "99999999");
+        PersonDTO pNotFound = new PersonDTO("Person", "Notfound", "99999999", "Personvej 34", "9999", "Personby");
         PersonDTO pMisInp = new PersonDTO(p1);
         pMisInp.setFirstName("");
         

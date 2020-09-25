@@ -20,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import utils.EMF_Creator;
 
 //Todo Remove or change relevant parts before ACTUAL use
 @Path("person")
@@ -68,7 +69,8 @@ public class PersonResource {
     @Consumes({MediaType.APPLICATION_JSON})
     public String addPerson(String person) throws MissingInputException {
         PersonDTO pDTO = GSON.fromJson(person, PersonDTO.class);
-        pDTO = FACADE.addPerson(pDTO.getFirstName(), pDTO.getLastName(), pDTO.getPhone());
+        pDTO = FACADE.addPerson(pDTO.getFirstName(), pDTO.getLastName(), 
+                pDTO.getPhone(), pDTO.getStreet(), pDTO.getZip(), pDTO.getCity());
         return GSON.toJson(pDTO);
     }
     

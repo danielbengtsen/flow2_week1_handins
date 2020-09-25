@@ -2,8 +2,8 @@ package facades;
 
 import dto.PersonDTO;
 import dto.PersonsDTO;
+import entities.Address;
 import entities.Person;
-import entities.RenameMe;
 import exceptions.MissingInputException;
 import exceptions.PersonNotFoundException;
 import java.util.List;
@@ -48,11 +48,19 @@ public class PersonFacade implements IPersonFacade {
         Person p1 = new Person("Kurt", "Kurbad", "13243546");
         Person p2 = new Person("Lars", "Lilulilalida", "87654321");
         Person p3 = new Person("Hov", "Dada", "15263744");
+        Address a1 = new Address("Kurtsvej 37", "0000", "Kurtsby");
+        Address a2 = new Address("Larsvej 87", "1111", "Larsby");
+        Address a3 = new Address("Hovsvej 13", "2222", "Hovsby");
+        p1.setAddress(a1);
+        p2.setAddress(a2);
+        p3.setAddress(a3);
         
         try {
             em.getTransaction().begin();
                 em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+                em.createNamedQuery("Address.deleteAllRows").executeUpdate();
                 em.createNativeQuery("ALTER TABLE PERSON AUTO_INCREMENT = 1").executeUpdate();
+                em.createNativeQuery("ALTER TABLE ADDRESS AUTO_INCREMENT = 1").executeUpdate();
                 em.persist(p1);
                 em.persist(p2);
                 em.persist(p3);
@@ -63,17 +71,22 @@ public class PersonFacade implements IPersonFacade {
     }
 
     @Override
-    public PersonDTO addPerson(String fName, String lName, String phone) throws MissingInputException {
+    public PersonDTO addPerson(String fName, String lName, String phone, String street, String zip, String city) throws MissingInputException {
         EntityManager em = getEntityManager();
         
         Person p = null;
+        Address a = null;
         
         if(fName.isEmpty() || lName.isEmpty()) {
             throw new MissingInputException("First name and/or last name is missing");
+        } else if(street.isEmpty() || zip.isEmpty() || city.isEmpty()) {
+            throw new MissingInputException("Street, zip and/or city is missing");
         } else {
             try {
                 em.getTransaction().begin();
                     p = new Person(fName, lName, phone);
+                    a = new Address(street, zip, city);
+                    p.setAddress(a);
                     em.persist(p);
                 em.getTransaction().commit();
             } finally {
@@ -96,6 +109,7 @@ public class PersonFacade implements IPersonFacade {
                 } else {
                     em.getTransaction().begin();
                         em.remove(p);
+                        em.remove(p.getAddress());
                     em.getTransaction().commit();
                     return new PersonDTO(p);
                 }
@@ -136,10 +150,13 @@ public class PersonFacade implements IPersonFacade {
     @Override
     public PersonDTO editPerson(PersonDTO p) throws MissingInputException, PersonNotFoundException {
         EntityManager em = getEntityManager();
-        Person pers = new Person();
+        Person pers = null;
+        Address addr = null;
         
         if(p.getFirstName().isEmpty() || p.getLastName().isEmpty()) {
             throw new MissingInputException("First name and/or last name is missing");
+        } else if(p.getStreet().isEmpty() || p.getZip().isEmpty() || p.getCity().isEmpty()) {
+            throw new MissingInputException("Street, zip and/or city is missing");
         } else {
             try {
                 pers = em.find(Person.class, p.getId());
@@ -147,9 +164,9 @@ public class PersonFacade implements IPersonFacade {
                     throw new PersonNotFoundException("No person with provided id found");
                 } else {
                     em.getTransaction().begin();
-                        pers.setFirstName(p.getFirstName());
-                        pers.setLastName(p.getLastName());
-                        pers.setPhone(p.getPhone());
+                        pers = new Person(p.getFirstName(), p.getLastName(), p.getPhone());
+                        addr = new Address(p.getStreet(), p.getZip(), p.getCity());
+                        pers.setAddress(addr);
                         em.persist(pers);
                     em.getTransaction().commit();
                     return new PersonDTO(pers);

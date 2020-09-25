@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dto.PersonDTO;
 import entities.Person;
-import entities.RenameMe;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
@@ -28,12 +27,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 //Uncomment the line below, to temporarily disable this test
-//@Disabled
+@Disabled
 public class PersonResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
-    private static RenameMe r1,r2;
     
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -153,7 +151,7 @@ public class PersonResourceTest {
     
     @Test
     public void addPersonTest() {
-        PersonDTO pDTO = new PersonDTO("Dani", "Danimann", "13243546");
+        PersonDTO pDTO = new PersonDTO("Dani", "Danimann", "13243546", "Danivej 57", "5555", "Daniby");
         
         given()
         .contentType("application/json")
@@ -167,7 +165,7 @@ public class PersonResourceTest {
     
     @Test
     public void addPersonNegativeTest() {
-        PersonDTO pDTO = new PersonDTO("", "Danimann", "13243546");
+        PersonDTO pDTO = new PersonDTO("", "Danimann", "13243546", "Danivej 57", "5555", "Daniby");
         
         given()
         .contentType("application/json")
@@ -181,7 +179,7 @@ public class PersonResourceTest {
     
     @Test
     public void editPersonTest() {
-        PersonDTO pDTO = new PersonDTO("Dani", "Danimann", "13243546");
+        PersonDTO pDTO = new PersonDTO("Dani", "Danimann", "13243546", "Danivej 57", "5555", "Daniby");
         
         given()
         .contentType("application/json")
@@ -195,8 +193,8 @@ public class PersonResourceTest {
     
     @Test
     public void editPersonNegativeTest() {
-        PersonDTO pNotFound = new PersonDTO("Dani", "Danimann", "13243546");
-        PersonDTO pMisInp = new PersonDTO("", "Danimann", "13243546");
+        PersonDTO pNotFound = new PersonDTO("Dani", "Danimann", "13243546", "Danivej 57", "5555", "Daniby");
+        PersonDTO pMisInp = new PersonDTO("", "Danimann", "13243546", "Danivej 57", "5555", "Daniby");
         
         ////////////////////////////////////////
         // Testing person not found exception //
