@@ -49,6 +49,8 @@ public class PersonFacade implements IPersonFacade {
         
         try {
             em.getTransaction().begin();
+                em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+                em.createNativeQuery("ALTER TABLE PERSON AUTO_INCREMENT = 1").executeUpdate();
                 em.persist(p1);
                 em.persist(p2);
                 em.persist(p3);
@@ -86,6 +88,7 @@ public class PersonFacade implements IPersonFacade {
                 pDTO = new PersonDTO(em.find(Person.class, id));
                 Query query = em.createQuery("DELETE FROM Person p WHERE p.id = :id", Person.class);
                 query.setParameter("id", id);
+                query.executeUpdate();
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -116,11 +119,22 @@ public class PersonFacade implements IPersonFacade {
 
     @Override
     public PersonDTO editPerson(PersonDTO p) {
-        p.setFirstName("NewFirst");
-        p.setLastName("NewLast");
-        p.setPhone("99999999");
+        EntityManager em = getEntityManager();
+        Person pers = new Person();
         
-        return p;
+        try {
+            em.getTransaction().begin();
+                pers = em.find(Person.class, p.getId());
+                pers.setFirstName(p.getFirstName());
+                pers.setLastName(p.getLastName());
+                pers.setPhone(p.getPhone());
+                em.persist(pers);
+            em.getTransaction().commit();
+            return new PersonDTO(pers);
+        } finally {
+            em.close();
+        }
+      
     }
 
 }

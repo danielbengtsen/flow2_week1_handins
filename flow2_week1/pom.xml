@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dat.sem3</groupId>
-    <artifactId>flow2_week1_part1</artifactId>
+    <artifactId>flow2_week1</artifactId>
     <version>1.0.1</version>
     <packaging>war</packaging>
 
-    <name>flow2_week1_part1</name>
+    <name>flow2_week1</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>

@@ -100,10 +100,11 @@ public class PersonFacadeTest {
         // Check if the two are the same.
         assertEquals(expected.getFirstName(), result.getFirstName());
         
+        expected.setFirstName("Gert");
         result = facade.editPerson(result);
         
         // Check if result's name has changed.
-        assertNotEquals(expected.getFirstName(), result.getFirstName());   
+        assertNotEquals(expected.getFirstName(), result.getFirstName());
     }
     
     @Test

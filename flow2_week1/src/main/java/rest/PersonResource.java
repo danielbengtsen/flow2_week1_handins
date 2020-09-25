@@ -4,12 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dto.PersonDTO;
 import dto.PersonsDTO;
+import entities.Person;
 import utils.EMF_Creator;
 import facades.PersonFacade;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -38,7 +42,7 @@ public class PersonResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String fillDB() {
         FACADE.fillDB();
-        return "{\"msg\":\"Success!\"}";
+        return "{\"msg\":\"Success filling db!\"}";
     }
     
     @Path("getperson/{id}")
@@ -57,24 +61,28 @@ public class PersonResource {
         return GSON.toJson(persons);
     }
     
-    @Path("addperson")
-    @GET
+    @POST
     @Produces({MediaType.APPLICATION_JSON})
-    public String addPerson() {
-        PersonDTO pDTO = FACADE.addPerson("Hopla", "Dopla", "86957384");
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String addPerson(String person) {
+        PersonDTO pDTO = GSON.fromJson(person, PersonDTO.class);
+        pDTO = FACADE.addPerson(pDTO.getFirstName(), pDTO.getLastName(), pDTO.getPhone());
         return GSON.toJson(pDTO);
     }
     
-    @Path("editperson/{id}")
-    @GET
+    @Path("{id}")
+    @PUT
     @Produces({MediaType.APPLICATION_JSON})
-    public String editPerson(@PathParam("id") int id) {
-        PersonDTO pDTO = FACADE.editPerson(FACADE.getPerson(id));
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String editPerson(@PathParam("id") int id, String person) {
+        PersonDTO pDTO = GSON.fromJson(person, PersonDTO.class);
+        pDTO.setId(id);
+        pDTO = FACADE.editPerson(pDTO);
         return GSON.toJson(pDTO);
     }
     
-    @Path("deleteperson/{id}")
-    @GET
+    @DELETE
+    @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
     public String deletePerson(@PathParam("id") int id) {
         PersonDTO pDTO = FACADE.deletePerson(id);

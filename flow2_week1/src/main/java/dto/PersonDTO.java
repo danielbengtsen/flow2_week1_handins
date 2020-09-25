@@ -18,9 +18,9 @@ public class PersonDTO {
         this.phone = p.getPhone();
     }
     
-    public PersonDTO(String fn, String ln, String phone) {
-        this.firstName = fn;
-        this.lastName = ln;
+    public PersonDTO(String firstName, String lastName, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.phone = phone;
     }
     
@@ -30,6 +30,10 @@ public class PersonDTO {
 
     public int getId() {
         return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFirstName() {
