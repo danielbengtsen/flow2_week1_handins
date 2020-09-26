@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 //Uncomment the line below, to temporarily disable this test
-@Disabled
+//@Disabled
 public class PersonFacadeTest {
 
     private static EntityManagerFactory emf;
@@ -137,6 +137,8 @@ public class PersonFacadeTest {
     @Test
     public void addPersonTest() throws MissingInputException {
         Person newP = new Person("Niels", "Johansen", "13243546");
+        Address newA = new Address("Nielsvej 65", "2132", "Nielsby");
+        newP.setAddress(newA);
         PersonDTO expected = new PersonDTO(newP);
         PersonDTO result = facade.addPerson(newP.getFirstName(), 
                 newP.getLastName(), newP.getPhone(), newP.getAddress().getStreet(),

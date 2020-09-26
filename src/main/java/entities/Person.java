@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -35,12 +36,14 @@ public class Person implements Serializable {
     private String firstName;
     private String lastName;
     private String phone;
+    
     @Temporal(TemporalType.DATE)
     private Date created;
+    
     @Temporal(TemporalType.DATE)
     private Date lastEdited;
     
-    @OneToOne(cascade = {CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.PERSIST})
     private Address address;
 
     public Person() {

@@ -3,6 +3,7 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dto.PersonDTO;
+import entities.Address;
 import entities.Person;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
@@ -27,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 //Uncomment the line below, to temporarily disable this test
-@Disabled
+//@Disabled
 public class PersonResourceTest {
 
     private static final int SERVER_PORT = 7777;
@@ -40,6 +41,10 @@ public class PersonResourceTest {
     private Person p1 = new Person("Kurt", "Kurbad", "12345689");
     private Person p2 = new Person("Hansi", "Nantitis", "84756373");
     private Person p3 = new Person("Uffe", "Ufimaven", "24354635");
+    
+    private Address a1 = new Address("Kurtsvej 37", "0000", "Kurtsby");
+    private Address a2 = new Address("Larsvej 87", "1111", "Larsby");
+    private Address a3 = new Address("Hovsvej 13", "2222", "Hovsby");
     
     private String pNotFoundMsg = "No person with provided id found";
     private String pMisInpMsg = "First name and/or last name is missing";
@@ -79,10 +84,17 @@ public class PersonResourceTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
+        
+        p1.setAddress(a1);
+        p2.setAddress(a2);
+        p3.setAddress(a3);
+        
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
             em.createNativeQuery("ALTER TABLE PERSON AUTO_INCREMENT = 1").executeUpdate();
+            em.createNativeQuery("ALTER TABLE ADDRESS AUTO_INCREMENT = 1").executeUpdate();
             em.persist(p1);
             em.persist(p2);
             em.persist(p3);
@@ -188,6 +200,9 @@ public class PersonResourceTest {
         .body("firstName", equalTo(pDTO.getFirstName()))
         .body("lastName", equalTo(pDTO.getLastName()))
         .body("phone", equalTo(pDTO.getPhone()))
+        .body("street", equalTo(pDTO.getStreet()))
+        .body("zip", equalTo(pDTO.getZip()))
+        .body("city", equalTo(pDTO.getCity()))
         .body("id", equalTo(p1.getId()));
     }
     

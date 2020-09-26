@@ -5,6 +5,8 @@ import dto.PersonsDTO;
 import entities.Address;
 import entities.Person;
 import exceptions.MissingInputException;
+import exceptions.MissingInputException;
+import exceptions.PersonNotFoundException;
 import exceptions.PersonNotFoundException;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -164,7 +166,9 @@ public class PersonFacade implements IPersonFacade {
                     throw new PersonNotFoundException("No person with provided id found");
                 } else {
                     em.getTransaction().begin();
-                        pers = new Person(p.getFirstName(), p.getLastName(), p.getPhone());
+                        pers.setFirstName(p.getFirstName()); 
+                        pers.setLastName(p.getLastName()); 
+                        pers.setPhone(p.getPhone());
                         addr = new Address(p.getStreet(), p.getZip(), p.getCity());
                         pers.setAddress(addr);
                         em.persist(pers);

@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 
@@ -27,7 +28,7 @@ public class Address implements Serializable {
     private String zip;
     private String city;
     
-    @OneToOne(mappedBy = "address")
+    @OneToMany(mappedBy = "address")
     private List<Person> persons;
 
     public Address() {
